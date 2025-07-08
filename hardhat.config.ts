@@ -1,5 +1,7 @@
-/** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
+import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
+
+const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
@@ -25,8 +27,10 @@ module.exports = {
   },
   paths: {
     sources: "./contracts",
-    tests: "./test",
+    tests: "./test-hardhat",
     cache: "./cache",
     artifacts: "./artifacts"
   }
 };
+
+export default config;

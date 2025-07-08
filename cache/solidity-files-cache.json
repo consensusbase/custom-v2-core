@@ -349,8 +349,8 @@
       ]
     },
     "/Users/kenshirokikuchi/Desktop/consensu-base/custom-v2-core/contracts/whitelist/interfaces/IWhiteListAuth.sol": {
-      "lastModificationDate": 1751976429992,
-      "contentHash": "b49efd766eb40bd387bdc74ca381dc9c",
+      "lastModificationDate": 1751985199217,
+      "contentHash": "216cf9da3daf78e3b0b167d3e3606ea2",
       "sourceName": "contracts/whitelist/interfaces/IWhiteListAuth.sol",
       "solcConfig": {
         "version": "0.5.16",
@@ -385,7 +385,7 @@
       ]
     },
     "/Users/kenshirokikuchi/Desktop/consensu-base/custom-v2-core/contracts/sbt/UniswapV2Factory.sol": {
-      "lastModificationDate": 1751976167811,
+      "lastModificationDate": 1751985071833,
       "contentHash": "4f365d5db3a070791471be4c0020c7cb",
       "sourceName": "contracts/sbt/UniswapV2Factory.sol",
       "solcConfig": {
@@ -536,17 +536,17 @@
       ]
     },
     "/Users/kenshirokikuchi/Desktop/consensu-base/custom-v2-core/contracts/sbt/interfaces/IKycSbt.sol": {
-      "lastModificationDate": 1751976766580,
-      "contentHash": "8bc174cfe1fe47c9a0372bbcb7d5bbda",
+      "lastModificationDate": 1751987833893,
+      "contentHash": "63109b27d7e6d90ecbdd5a00671c3fdd",
       "sourceName": "contracts/sbt/interfaces/IKycSbt.sol",
       "solcConfig": {
-        "version": "0.8.28",
+        "version": "0.5.16",
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 999999
           },
-          "evmVersion": "paris",
+          "evmVersion": "istanbul",
           "outputSelection": {
             "*": {
               "*": [
@@ -565,24 +565,24 @@
       },
       "imports": [],
       "versionPragmas": [
-        ">=0.5.0"
+        "=0.5.16"
       ],
       "artifacts": [
         "IKycSbt"
       ]
     },
     "/Users/kenshirokikuchi/Desktop/consensu-base/custom-v2-core/contracts/sbt/interfaces/IAuthManager.sol": {
-      "lastModificationDate": 1751911348667,
-      "contentHash": "30f056a1bdd364159ab678056ad3e2c0",
+      "lastModificationDate": 1751985066506,
+      "contentHash": "ac8c74f745729671988f206a6eb47d8c",
       "sourceName": "contracts/sbt/interfaces/IAuthManager.sol",
       "solcConfig": {
-        "version": "0.8.28",
+        "version": "0.5.16",
         "settings": {
           "optimizer": {
             "enabled": true,
             "runs": 999999
           },
-          "evmVersion": "paris",
+          "evmVersion": "istanbul",
           "outputSelection": {
             "*": {
               "*": [
@@ -601,7 +601,7 @@
       },
       "imports": [],
       "versionPragmas": [
-        ">=0.5.0"
+        "=0.5.16"
       ],
       "artifacts": [
         "IAuthManager"
@@ -716,8 +716,8 @@
       ]
     },
     "/Users/kenshirokikuchi/Desktop/consensu-base/custom-v2-core/contracts/auth/AuthManager.sol": {
-      "lastModificationDate": 1751907590315,
-      "contentHash": "13f7982da1536334595b7240504c5120",
+      "lastModificationDate": 1751978946043,
+      "contentHash": "fa8f7c914a8f987349a9fcac1e068f72",
       "sourceName": "contracts/auth/AuthManager.sol",
       "solcConfig": {
         "version": "0.8.28",

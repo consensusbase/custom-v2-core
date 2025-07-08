@@ -3,3 +3,5 @@ build/
 
 contracts/auth
 artifacts/
+test-hardhat/
+cache/

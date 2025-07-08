@@ -17,4 +17,4 @@ interface IWhiteListAuth {
     function getSupplierStatus(address _target) external view returns (bool);
     function isERC20Active(address contractAddress) external view returns (bool);
     function getERC20Info(address contractAddress) external view returns (string memory, string memory, uint8, uint8, bool);
-} 
+}

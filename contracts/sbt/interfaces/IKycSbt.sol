@@ -1,4 +1,4 @@
-pragma solidity >=0.5.0;
+pragma solidity =0.5.16;
 
 interface IKycSbt {
     function balanceOf(address owner) external view returns (uint256);
