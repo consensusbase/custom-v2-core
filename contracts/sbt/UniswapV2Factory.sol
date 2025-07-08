@@ -1,6 +1,6 @@
 pragma solidity =0.5.16;
 
-import './interfaces/IUniswapV2Factory.sol';
+import '../interfaces/IUniswapV2Factory.sol';
 import './UniswapV2Pair.sol';
 import './interfaces/IKycSbt.sol';
 import './interfaces/IAuthManager.sol';
@@ -26,7 +26,7 @@ contract UniswapV2Factory is IUniswapV2Factory {
         if (authContract == address(0) || kycSbtContract == address(0)) return false;
         IAuthManager authManager = IAuthManager(authContract);
         IKycSbt kycSbt = IKycSbt(kycSbtContract);
-        if (kycSBT.balanceOf(address(this)) == 0) return false;
+        if (kycSbt.balanceOf(address(this)) == 0) return false;
 
         uint256[] memory holdtokens = kycSbt.getHoldTokens(address(this));
         if (holdtokens.length == 0) return false;
@@ -46,14 +46,16 @@ contract UniswapV2Factory is IUniswapV2Factory {
         return true;
     }
 
-    function isCErc20TokenValid(address tokenAddress) public view returns (bool) {
+    function isErc20TokenValid(address tokenAddress) public view returns (bool) {
         if (!isFactoryKycVerified()) return false;
+        IAuthManager authManager = IAuthManager(authContract);
+        IKycSbt kycSbt = IKycSbt(kycSbtContract);
         (uint8 tokenType, bool isActive, address minter) = authManager.getERC20Attribute(tokenAddress);
         if (!isActive) return false;
         if (!authManager.getMinterActivity(minter)) return false;
         if (!authManager.isERC20Active(tokenAddress)) return false;
 
-        uint256[] memory holdtokens = kycSBT.getHoldTokens(address(this));
+        uint256[] memory holdtokens = kycSbt.getHoldTokens(address(this));
         if (holdtokens.length == 0) return false;
         for (uint i = 0; i < holdtokens.length; i++) {
             (
@@ -63,7 +65,7 @@ contract UniswapV2Factory is IUniswapV2Factory {
                 bool sbtIsDeadLock,
                 bool sbtIsVerified,
                 uint256 sbtExpire
-            ) = kycSBT.getKYCAttribute(holdtokens[i]);
+            ) = kycSbt.getKYCAttribute(holdtokens[i]);
             if (
                 sbtVerifyType == tokenType &&
                 !sbtIsDeadLock &&
@@ -81,8 +83,8 @@ contract UniswapV2Factory is IUniswapV2Factory {
 
     function createPair(address tokenA, address tokenB) external returns (address pair) {
         require(isFactoryKycVerified(), 'UniswapV2: FACTORY_KYC_INVALID');
-        require(isCErc20TokenValid(token0), 'UniswapV2: TOKEN0_NOT_VALID');
-        require(isCErc20TokenValid(token1), 'UniswapV2: TOKEN1_NOT_VALID');
+        require(isErc20TokenValid(tokenA), 'UniswapV2: TOKENA_NOT_VALID');
+        require(isErc20TokenValid(tokenB), 'UniswapV2: TOKENB_NOT_VALID');
 
         require(tokenA != tokenB, 'UniswapV2: IDENTICAL_ADDRESSES');
         (address token0, address token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);

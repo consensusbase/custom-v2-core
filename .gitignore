@@ -2,3 +2,4 @@ node_modules/
 build/
 
 contracts/auth
+artifacts/

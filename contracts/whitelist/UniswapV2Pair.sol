@@ -1,12 +1,12 @@
 pragma solidity =0.5.16;
 
-import './interfaces/IUniswapV2Pair.sol';
-import './UniswapV2ERC20.sol';
-import './libraries/Math.sol';
-import './libraries/UQ112x112.sol';
-import './interfaces/IERC20.sol';
-import './interfaces/IUniswapV2Factory.sol';
-import './interfaces/IUniswapV2Callee.sol';
+import '../interfaces/IUniswapV2Pair.sol';
+import '../UniswapV2ERC20.sol';
+import '../libraries/Math.sol';
+import '../libraries/UQ112x112.sol';
+import '../interfaces/IERC20.sol';
+import '../interfaces/IUniswapV2Factory.sol';
+import '../interfaces/IUniswapV2Callee.sol';
 
 contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     using SafeMath  for uint;
@@ -109,8 +109,8 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     // this low-level function should be called from a contract which performs important safety checks
     function mint(address to) external lock returns (uint liquidity) {
         require(IUniswapV2Factory(factory).isFactoryKycVerified(), 'UniswapV2: FACTORY_KYC_INVALID');
-        require(IUniswapV2Factory(factory).isWLCErc20TokenValid(token0), 'UniswapV2: TOKEN0_NOT_VALID');
-        require(IUniswapV2Factory(factory).isWLCErc20TokenValid(token1), 'UniswapV2: TOKEN1_NOT_VALID');
+        require(IUniswapV2Factory(factory).isErc20TokenValid(token0), 'UniswapV2: TOKEN0_NOT_VALID');
+        require(IUniswapV2Factory(factory).isErc20TokenValid(token1), 'UniswapV2: TOKEN1_NOT_VALID');
 
         (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
         uint balance0 = IERC20(token0).balanceOf(address(this));
@@ -162,8 +162,8 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     // this low-level function should be called from a contract which performs important safety checks
     function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external lock {
         require(IUniswapV2Factory(factory).isFactoryKycVerified(), 'UniswapV2: FACTORY_KYC_INVALID');
-        require(IUniswapV2Factory(factory).isWLCErc20TokenValid(token0), 'UniswapV2: TOKEN0_NOT_VALID');
-        require(IUniswapV2Factory(factory).isWLCErc20TokenValid(token1), 'UniswapV2: TOKEN1_NOT_VALID');
+        require(IUniswapV2Factory(factory).isErc20TokenValid(token0), 'UniswapV2: TOKEN0_NOT_VALID');
+        require(IUniswapV2Factory(factory).isErc20TokenValid(token1), 'UniswapV2: TOKEN1_NOT_VALID');
 
         require(amount0Out > 0 || amount1Out > 0, 'UniswapV2: INSUFFICIENT_OUTPUT_AMOUNT');
         (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
