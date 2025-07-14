@@ -5,7 +5,11 @@ import './UniswapV2Pair.sol';
 import './interfaces/IKycSbt.sol';
 import './interfaces/IAuthManager.sol';
 
-contract UniswapV2Factory is IUniswapV2Factory {
+interface IERC721Receiver {
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4);
+}
+
+contract SbtFactory is IUniswapV2Factory {
     address public feeTo;
     address public feeToSetter;
     address public kycSbtContract;
@@ -120,5 +124,9 @@ contract UniswapV2Factory is IUniswapV2Factory {
     function setKycSBTContract(address _kycsbtContract) external {
         require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
         kycSbtContract = _kycsbtContract;
+    }
+
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4) {
+        return 0x150b7a02;
     }
 }

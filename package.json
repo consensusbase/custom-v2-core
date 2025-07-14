@@ -25,6 +25,7 @@
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@openzeppelin/contracts": "^5.3.0",
     "@openzeppelin/contracts-upgradeable": "^5.3.0",
+    "@openzeppelin/hardhat-upgrades": "^3.9.1",
     "hardhat": "^2.25.0",
     "prettier": "^1.19.1"
   },
@@ -36,7 +37,9 @@
     "compile": "npx hardhat compile",
     "pretest": "yarn compile",
     "test": "mocha",
-    "prepublishOnly": "yarn test"
+    "prepublishOnly": "yarn test",
+    "deploy:ganache": "npx hardhat run scripts/deploy.ts --network ganache",
+    "deploy:tenderly": "npx hardhat run scripts/deploy.ts --network tenderly"
   },
   "license": "GPL-3.0-or-later"
 }

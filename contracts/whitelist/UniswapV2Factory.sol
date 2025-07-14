@@ -5,7 +5,11 @@ import '../interfaces/IUniswapV2Factory.sol';
 import './UniswapV2Pair.sol';
 import './interfaces/IWhiteListAuth.sol';
 
-contract UniswapV2Factory is IUniswapV2Factory {
+interface IERC721Receiver {
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4);
+}
+
+contract WhiteListFactory is IUniswapV2Factory {
     address public feeTo;
     address public feeToSetter;
     address public authContract;
@@ -106,5 +110,9 @@ contract UniswapV2Factory is IUniswapV2Factory {
     function setAuthContract(address _authContract) external {
         require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
         authContract = _authContract;
+    }
+
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4) {
+        return 0x150b7a02;
     }
 }

@@ -5,3 +5,7 @@ contracts/auth
 artifacts/
 test-hardhat/
 cache/
+typechain-types/
+
+.env
+scripts/
