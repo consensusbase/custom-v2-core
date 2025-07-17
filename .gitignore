@@ -1,5 +1,8 @@
 node_modules/
 build/
+.deps/
+cache/
+.openzeppelin/
 
 contracts/auth
 artifacts/

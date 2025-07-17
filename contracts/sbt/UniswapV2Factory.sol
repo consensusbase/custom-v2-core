@@ -26,59 +26,47 @@ contract SbtFactory is IUniswapV2Factory {
         kycSbtContract = _kycSbtContract;
     }
 
-    function isFactoryKycVerified() public view returns (bool) {
+    function isFactoryKycVerified(address tokenAddress) public view returns (bool) {
         if (authContract == address(0) || kycSbtContract == address(0)) return false;
         IAuthManager authManager = IAuthManager(authContract);
         IKycSbt kycSbt = IKycSbt(kycSbtContract);
         if (kycSbt.balanceOf(address(this)) == 0) return false;
 
+        (, , , uint8 tokenType) = authManager.getERC20Info(tokenAddress);
+
         uint256[] memory holdtokens = kycSbt.getHoldTokens(address(this));
         if (holdtokens.length == 0) return false;
-        uint256 maxTokenId = 0;
+        bool res = false;
         for (uint i = 0; i < holdtokens.length; i++) {
-            if (holdtokens[i] > maxTokenId) {
-                maxTokenId = holdtokens[i];
-            }
+          (
+            address minter,
+            uint8 verifyType,
+            bool sbtIsActive,
+            bool isDeadLock,
+            bool isVerified,
+            ,
+            uint256 expire
+          ) = kycSbt.getKYCAttribute(holdtokens[i]);
+          if (!authManager.getMinterActivity(minter)) continue;
+          if (verifyType != tokenType) continue;
+          if (isDeadLock) continue;
+          if (!sbtIsActive) continue;
+          if (!isVerified && expire < block.timestamp) continue;
+          res = true;
+          break;
         }
-
-        (address minter, uint8 verifyType, bool isActive, bool isDeadLock, bool isVerified, uint256 expire) = kycSbt
-            .getKYCAttribute(holdtokens[maxTokenId]);
-        if (!authManager.getMinterActivity(minter)) return false;
-        if (isDeadLock) return false;
-        if (!isActive) return false;
-        if (!isVerified && expire < block.timestamp) return false;
-        return true;
+        return res;
     }
 
     function isErc20TokenValid(address tokenAddress) public view returns (bool) {
-        if (!isFactoryKycVerified()) return false;
+        if (authContract == address(0) || kycSbtContract == address(0)) return false;
         IAuthManager authManager = IAuthManager(authContract);
         IKycSbt kycSbt = IKycSbt(kycSbtContract);
-        (uint8 tokenType, bool isActive, address minter) = authManager.getERC20Attribute(tokenAddress);
-        if (!isActive) return false;
+
+        (, , , , address minter) = authManager.getERC20Info(tokenAddress);
         if (!authManager.getMinterActivity(minter)) return false;
         if (!authManager.isERC20Active(tokenAddress)) return false;
-
-        uint256[] memory holdtokens = kycSbt.getHoldTokens(address(this));
-        if (holdtokens.length == 0) return false;
-        for (uint i = 0; i < holdtokens.length; i++) {
-            (
-                address sbtMinter,
-                uint8 sbtVerifyType,
-                bool sbtIsActive,
-                bool sbtIsDeadLock,
-                bool sbtIsVerified,
-                uint256 sbtExpire
-            ) = kycSbt.getKYCAttribute(holdtokens[i]);
-            if (
-                sbtVerifyType == tokenType &&
-                !sbtIsDeadLock &&
-                sbtIsActive &&
-                sbtIsVerified &&
-                sbtExpire > block.timestamp
-            ) return true;
-        }
-        return false;
+        return true;
     }
 
     function allPairsLength() external view returns (uint) {
@@ -86,7 +74,8 @@ contract SbtFactory is IUniswapV2Factory {
     }
 
     function createPair(address tokenA, address tokenB) external returns (address pair) {
-        require(isFactoryKycVerified(), 'UniswapV2: FACTORY_KYC_INVALID');
+        require(isFactoryKycVerified(tokenA), 'UniswapV2: FACTORY_KYC_INVALID');
+        require(isFactoryKycVerified(tokenB), 'UniswapV2: FACTORY_KYC_INVALID');
         require(isErc20TokenValid(tokenA), 'UniswapV2: TOKENA_NOT_VALID');
         require(isErc20TokenValid(tokenB), 'UniswapV2: TOKENB_NOT_VALID');
 

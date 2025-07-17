@@ -15,6 +15,6 @@ interface IUniswapV2Factory {
     function setFeeTo(address) external;
     function setFeeToSetter(address) external;
     
-    function isFactoryKycVerified() external view returns (bool);
+    function isFactoryKycVerified(address tokenAddress) external view returns (bool);
     function isErc20TokenValid(address tokenAddress) external view returns (bool);
 }

@@ -24,52 +24,42 @@ contract WhiteListFactory is IUniswapV2Factory {
         authContract = _authContract;
     }
 
-    function isFactoryKycVerified() public view returns (bool) {
+    function isFactoryKycVerified(address tokenAddress) public view returns (bool) {
         if (authContract == address(0)) return false;
 
         IWhiteListAuth auth = IWhiteListAuth(authContract);
         IWhiteListAuth.KYCAttribute[] memory attributes = auth.getKYCAttributes(address(this));
 
+        (
+          string memory name,
+          string memory symbol,
+          uint8 decimals,
+          uint8 tokenType,
+          bool isActive
+        ) = auth.getERC20Info(tokenAddress);
+
         if (attributes.length == 0) return false;
-
-        uint256 maxId = 0;
-        uint256 maxIndex = 0;
+        bool res = false;
         for (uint i = 0; i < attributes.length; i++) {
-            if (attributes[i].id > maxId) {
-                maxId = attributes[i].id;
-                maxIndex = i;
-            }
+          if (!auth.getSupplierStatus(attributes[i].supplier)) continue;
+          if (attributes[i].verifyType == tokenType) continue;
+          if (attributes[i].deadlock) continue;
+          if (!attributes[i].activity) continue;
+          if (!attributes[i].isVerifiedToken && attributes[i].expireTime < block.timestamp) continue;
+          res = true;
+          break;
         }
-        IWhiteListAuth.KYCAttribute memory latestAttr = attributes[maxIndex];
-
-        if (!auth.getSupplierStatus(latestAttr.supplier)) return false;
-        if (latestAttr.deadlock) return false;
-        if (!latestAttr.activity) return false;
-        if (!latestAttr.isVerifiedToken && latestAttr.expireTime < block.timestamp) return false;
-        return true;
+        return res;
     }
 
     function isErc20TokenValid(address tokenAddress) public view returns (bool) {
-        if (!isFactoryKycVerified()) return false;
+        if (authContract == address(0)) return false;
         IWhiteListAuth auth = IWhiteListAuth(authContract);
-        if (!auth.isERC20Active(tokenAddress)) return false;
 
-        (string memory name, string memory symbol, uint8 decimals, uint8 tokenType, bool isActive) = auth.getERC20Info(
-            tokenAddress
-        );
+        (, , , , bool isActive, address minter) = auth.getERC20Info(tokenAddress);
         if (!isActive) return false;
-        IWhiteListAuth.KYCAttribute[] memory attributes = auth.getKYCAttributes(address(this));
-        for (uint i = 0; i < attributes.length; i++) {
-            IWhiteListAuth.KYCAttribute memory attr = attributes[i];
-            if (
-                attr.verifyType == tokenType &&
-                !attr.deadlock &&
-                attr.activity &&
-                attr.isVerifiedToken &&
-                attr.expireTime > block.timestamp
-            ) return true;
-        }
-        return false;
+        if (!auth.getCTIStatus(minter)) return false;
+        return true;
     }
 
     function allPairsLength() external view returns (uint) {
@@ -77,7 +67,8 @@ contract WhiteListFactory is IUniswapV2Factory {
     }
 
     function createPair(address tokenA, address tokenB) external returns (address pair) {
-        require(isFactoryKycVerified(), 'UniswapV2: FACTORY_KYC_INVALID');
+        require(isFactoryKycVerified(tokenA), 'UniswapV2: FACTORY_KYC_INVALID');
+        require(isFactoryKycVerified(tokenB), 'UniswapV2: FACTORY_KYC_INVALID');
         require(isErc20TokenValid(tokenA), 'UniswapV2: TOKENA_NOT_VALID');
         require(isErc20TokenValid(tokenB), 'UniswapV2: TOKENB_NOT_VALID');
 
