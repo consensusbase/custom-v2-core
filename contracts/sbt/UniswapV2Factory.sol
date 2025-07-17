@@ -32,7 +32,7 @@ contract SbtFactory is IUniswapV2Factory {
         IKycSbt kycSbt = IKycSbt(kycSbtContract);
         if (kycSbt.balanceOf(address(this)) == 0) return false;
 
-        (, , , uint8 tokenType) = authManager.getERC20Info(tokenAddress);
+        (, , , uint8 tokenType, ) = authManager.getERC20Info(tokenAddress);
 
         uint256[] memory holdtokens = kycSbt.getHoldTokens(address(this));
         if (holdtokens.length == 0) return false;

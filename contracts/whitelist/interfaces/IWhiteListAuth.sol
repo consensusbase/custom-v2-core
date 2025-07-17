@@ -20,10 +20,12 @@ interface IWhiteListAuth {
         uint8 decimals;
         uint8 tokenType;
         bool activity;
+        address minter;
     }
 
     function getKYCAttributes(address _target) external view returns (KYCAttribute[] memory);
     function getSupplierStatus(address _target) external view returns (bool);
     function isERC20Active(address contractAddress) external view returns (bool);
     function getERC20Info(address contractAddress) external view returns (erc20Attribute memory);
+    function getCTIStatus(address _target) external view returns (bool);
 }

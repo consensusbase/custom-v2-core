@@ -30,13 +30,9 @@ contract WhiteListFactory is IUniswapV2Factory {
         IWhiteListAuth auth = IWhiteListAuth(authContract);
         IWhiteListAuth.KYCAttribute[] memory attributes = auth.getKYCAttributes(address(this));
 
-        (
-          string memory name,
-          string memory symbol,
-          uint8 decimals,
-          uint8 tokenType,
-          bool isActive
-        ) = auth.getERC20Info(tokenAddress);
+        IWhiteListAuth.erc20Attribute memory tokenInfo = auth.getERC20Info(tokenAddress);
+        uint8 tokenType = tokenInfo.tokenType;
+        address minter = tokenInfo.minter;
 
         if (attributes.length == 0) return false;
         bool res = false;
@@ -56,8 +52,10 @@ contract WhiteListFactory is IUniswapV2Factory {
         if (authContract == address(0)) return false;
         IWhiteListAuth auth = IWhiteListAuth(authContract);
 
-        (, , , , bool isActive, address minter) = auth.getERC20Info(tokenAddress);
-        if (!isActive) return false;
+        IWhiteListAuth.erc20Attribute memory tokenInfo = auth.getERC20Info(tokenAddress);
+        bool activity = tokenInfo.activity;
+        address minter = tokenInfo.minter;
+        if (!activity) return false;
         if (!auth.getCTIStatus(minter)) return false;
         return true;
     }
