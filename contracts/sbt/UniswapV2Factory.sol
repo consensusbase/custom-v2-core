@@ -61,7 +61,6 @@ contract SbtFactory is IUniswapV2Factory {
     function isErc20TokenValid(address tokenAddress) public view returns (bool) {
         if (authContract == address(0) || kycSbtContract == address(0)) return false;
         IAuthManager authManager = IAuthManager(authContract);
-        IKycSbt kycSbt = IKycSbt(kycSbtContract);
 
         (, , , , address minter) = authManager.getERC20Info(tokenAddress);
         if (!authManager.getMinterActivity(minter)) return false;

@@ -12,3 +12,6 @@ typechain-types/
 
 .env
 scripts/
+periphery/
+
+test/sbt.spec.ts
