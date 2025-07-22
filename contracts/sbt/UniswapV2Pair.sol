@@ -108,6 +108,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
 
     // this low-level function should be called from a contract which performs important safety checks
     function mint(address to) external lock returns (uint liquidity) {
+        require(IUniswapV2Factory(factory).isActive(), 'UniswapV2: FACTORY_INACTIVE');
         require(IUniswapV2Factory(factory).isFactoryKycVerified(token0), 'UniswapV2: FACTORY_KYC_INVALID');
         require(IUniswapV2Factory(factory).isFactoryKycVerified(token1), 'UniswapV2: FACTORY_KYC_INVALID');
         require(IUniswapV2Factory(factory).isErc20TokenValid(token0), 'UniswapV2: TOKEN0_NOT_VALID');
@@ -162,6 +163,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
 
     // this low-level function should be called from a contract which performs important safety checks
     function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external lock {
+        require(IUniswapV2Factory(factory).isActive(), 'UniswapV2: FACTORY_INACTIVE');
         require(IUniswapV2Factory(factory).isFactoryKycVerified(token0), 'UniswapV2: FACTORY_KYC_INVALID');
         require(IUniswapV2Factory(factory).isFactoryKycVerified(token1), 'UniswapV2: FACTORY_KYC_INVALID');
         require(IUniswapV2Factory(factory).isErc20TokenValid(token0), 'UniswapV2: TOKEN0_NOT_VALID');

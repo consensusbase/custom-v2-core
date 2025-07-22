@@ -14,16 +14,19 @@ contract SbtFactory is IUniswapV2Factory {
     address public feeToSetter;
     address public kycSbtContract;
     address public authContract;
+    bool public isActive;
 
     mapping(address => mapping(address => address)) public getPair;
     address[] public allPairs;
 
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
+    event FactoryStatusChanged(bool isActive);
 
     constructor(address _feeToSetter, address _authContract, address _kycSbtContract) public {
         feeToSetter = _feeToSetter;
         authContract = _authContract;
         kycSbtContract = _kycSbtContract;
+        isActive = true;
     }
 
     function isFactoryKycVerified(address tokenAddress) public view returns (bool) {
@@ -73,6 +76,7 @@ contract SbtFactory is IUniswapV2Factory {
     }
 
     function createPair(address tokenA, address tokenB) external returns (address pair) {
+        require(isActive, 'UniswapV2: FACTORY_INACTIVE');
         require(isFactoryKycVerified(tokenA), 'UniswapV2: FACTORY_KYC_INVALID');
         require(isFactoryKycVerified(tokenB), 'UniswapV2: FACTORY_KYC_INVALID');
         require(isErc20TokenValid(tokenA), 'UniswapV2: TOKENA_NOT_VALID');
@@ -112,6 +116,12 @@ contract SbtFactory is IUniswapV2Factory {
     function setKycSBTContract(address _kycsbtContract) external {
         require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
         kycSbtContract = _kycsbtContract;
+    }
+
+    function setFactoryStatus(bool _isActive) external {
+        require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
+        isActive = _isActive;
+        emit FactoryStatusChanged(isActive);
     }
 
     function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4) {

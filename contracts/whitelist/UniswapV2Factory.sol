@@ -13,15 +13,18 @@ contract WhiteListFactory is IUniswapV2Factory {
     address public feeTo;
     address public feeToSetter;
     address public authContract;
+    bool public isActive;
 
     mapping(address => mapping(address => address)) public getPair;
     address[] public allPairs;
 
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
+    event FactoryStatusChanged(bool isActive);
 
     constructor(address _feeToSetter, address _authContract) public {
         feeToSetter = _feeToSetter;
         authContract = _authContract;
+        isActive = true;
     }
 
     function isFactoryKycVerified(address tokenAddress) public view returns (bool) {
@@ -32,7 +35,6 @@ contract WhiteListFactory is IUniswapV2Factory {
 
         IWhiteListAuth.erc20Attribute memory tokenInfo = auth.getERC20Info(tokenAddress);
         uint8 tokenType = tokenInfo.tokenType;
-        address minter = tokenInfo.minter;
 
         if (attributes.length == 0) return false;
         bool res = false;
@@ -65,6 +67,7 @@ contract WhiteListFactory is IUniswapV2Factory {
     }
 
     function createPair(address tokenA, address tokenB) external returns (address pair) {
+        require(isActive, 'UniswapV2: FACTORY_INACTIVE');
         require(isFactoryKycVerified(tokenA), 'UniswapV2: FACTORY_KYC_INVALID');
         require(isFactoryKycVerified(tokenB), 'UniswapV2: FACTORY_KYC_INVALID');
         require(isErc20TokenValid(tokenA), 'UniswapV2: TOKENA_NOT_VALID');
@@ -99,6 +102,12 @@ contract WhiteListFactory is IUniswapV2Factory {
     function setAuthContract(address _authContract) external {
         require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
         authContract = _authContract;
+    }
+
+    function toggleFactoryStatus() external {
+        require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
+        isActive = !isActive;
+        emit FactoryStatusChanged(isActive);
     }
 
     function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4) {
