@@ -16,3 +16,5 @@ periphery/
 
 test/sbt.spec.ts
 test-private/
+
+.DS_Store

@@ -5,7 +5,11 @@ import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20P
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract FAKA is ERC20, ERC20Permit, Ownable {
-    constructor() ERC20("FAKA", "FAKA") ERC20Permit("FAKA") Ownable(msg.sender) {}
+    constructor(
+        string memory name,
+        string memory symbol,
+        address initialOwner
+    ) ERC20(name, symbol) ERC20Permit(name) Ownable(initialOwner) {}
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);

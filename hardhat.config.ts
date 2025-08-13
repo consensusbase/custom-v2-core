@@ -32,6 +32,11 @@ const config: HardhatUserConfig = {
       chainId: 1337,
       accounts: ['']
     },
+    sepolia: {
+      url: "",
+      chainId: 11155111,
+      accounts: ['']
+    }
   },
   paths: {
     sources: "./contracts",

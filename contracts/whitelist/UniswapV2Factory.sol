@@ -5,6 +5,12 @@ import '../interfaces/IUniswapV2Factory.sol';
 import './UniswapV2Pair.sol';
 import './interfaces/IWhiteListAuth.sol';
 
+/**
+ * The source code and license details for this contract can be found at the URL
+ * specified in the sourceUrl variable. Please check the current value of sourceUrl
+ * to access the complete source code and license information.
+ */
+
 interface IERC721Receiver {
     function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4);
 }
@@ -14,6 +20,7 @@ contract WhiteListFactory is IUniswapV2Factory {
     address public feeToSetter;
     address public authContract;
     bool public isActive;
+    string public sourceUrl;
 
     mapping(address => mapping(address => address)) public getPair;
     address[] public allPairs;
@@ -40,7 +47,7 @@ contract WhiteListFactory is IUniswapV2Factory {
         bool res = false;
         for (uint i = 0; i < attributes.length; i++) {
           if (!auth.getSupplierStatus(attributes[i].supplier)) continue;
-          if (attributes[i].verifyType == tokenType) continue;
+          if (attributes[i].verifyType != tokenType) continue;
           if (attributes[i].deadlock) continue;
           if (!attributes[i].activity) continue;
           if (!attributes[i].isVerifiedToken && attributes[i].expireTime < block.timestamp) continue;
@@ -70,8 +77,8 @@ contract WhiteListFactory is IUniswapV2Factory {
         require(isActive, 'UniswapV2: FACTORY_INACTIVE');
         require(isFactoryKycVerified(tokenA), 'UniswapV2: FACTORY_KYC_INVALID');
         require(isFactoryKycVerified(tokenB), 'UniswapV2: FACTORY_KYC_INVALID');
-        require(isErc20TokenValid(tokenA), 'UniswapV2: TOKENA_NOT_VALID');
-        require(isErc20TokenValid(tokenB), 'UniswapV2: TOKENB_NOT_VALID');
+        require(isErc20TokenValid(tokenA), 'UniswapV2: TOKEN_A_FACTORY_NOT_VALID');
+        require(isErc20TokenValid(tokenB), 'UniswapV2: TOKEN_B_FACTORY_NOT_VALID');
 
         require(tokenA != tokenB, 'UniswapV2: IDENTICAL_ADDRESSES');
         (address token0, address token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
@@ -108,6 +115,11 @@ contract WhiteListFactory is IUniswapV2Factory {
         require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
         isActive = !isActive;
         emit FactoryStatusChanged(isActive);
+    }
+
+    function setSourceUrl(string calldata _sourceUrl) external {
+        require(msg.sender == feeToSetter, 'UniswapV2: FORBIDDEN');
+        sourceUrl = _sourceUrl;
     }
 
     function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external returns (bytes4) {
