@@ -1,2 +1,17 @@
 node_modules/
 build/
+.deps/
+cache/
+.openzeppelin/
+
+contracts/auth
+artifacts/
+test-hardhat/
+cache/
+typechain-types/
+
+.env
+scripts/
+periphery/
+
+test/sbt.spec.ts
